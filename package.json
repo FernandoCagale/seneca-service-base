@@ -1,0 +1,22 @@
+{
+  "name": "seneca-service-base",
+  "version": "1.0.0",
+  "description": "",
+  "main": "service.js",
+  "scripts": {
+    "start": "node service.js",
+    "linter": "semistandard"
+  },
+  "author": "Fernando Cagale <fernando.b.cagale@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "seneca": "^3.3.0",
+    "seneca-balance-client": "^0.6.1",
+    "seneca-consul-registry": "^0.1.0",
+    "seneca-mesh": "^0.10.0"
+  },
+  "devDependencies": {
+    "semistandard": "^11.0.0"
+  }
+}

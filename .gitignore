@@ -1,0 +1,6 @@
+npm-debug.log
+
+# dependency directory
+node_modules
+
+.env
