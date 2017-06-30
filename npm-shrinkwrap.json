@@ -1,5 +1,5 @@
 {
-  "name": "seneca-service-invoice",
+  "name": "seneca-service-base",
   "version": "1.0.0",
   "lockfileVersion": 1,
   "dependencies": {
