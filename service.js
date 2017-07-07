@@ -2,22 +2,32 @@
 
 require('dotenv').load({silent: true});
 
-const Seneca = require('seneca');
+const seneca = require('seneca')({base: 'api-base'});
+const consul = require('seneca-consul-registry');
+const mesh = require('seneca-mesh');
 
-Seneca({
-  tag: 'base'
-}).use('consul-registry', {
-  host: process.env.ADDR || '127.0.0.1'
-}).use('seneca-mesh', {
-  isbase: true,
-  discover: {
-    registry: {
-      active: true
-    },
-    multicast: {
-      active: false
+const opts = {
+  mesh: {
+    isbase: true,
+    listen: [{
+      pin: 'role:mesh,base:true'
+    }],
+    discover: {
+      guess: {
+        active: false
+      },
+      multicast: {
+        active: false
+      },
+      registry: {
+        active: true
+      }
     }
+  },
+  consul: {
+    host: process.env.ADDR || '127.0.0.1'
   }
-}).ready(function () {
-  console.log('base', this.id);
-});
+};
+
+seneca.use(consul, opts.consul);
+seneca.use(mesh, opts.mesh);
