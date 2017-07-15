@@ -1,0 +1,50 @@
+image: docker:git
+
+services:
+  - docker:dind
+
+stages:
+  - build
+  - test
+  - release
+  - deploy
+
+variables:
+  SERVER_TEST_IMAGE: registry.gitlab.com/fernandocagale/seneca-service-base:$CI_BUILD_REF_NAME
+  SERVER_RELEASE_IMAGE: registry.gitlab.com/fernandocagale/seneca-service-base:latest
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+build-server:
+  stage: build
+  script:
+    - docker build --pull -t $SERVER_TEST_IMAGE .
+    - docker push $SERVER_TEST_IMAGE
+
+test-server:
+  stage: test
+  script:
+    - echo "Test"
+
+release-server:
+  stage: release
+  script:
+    - docker pull $SERVER_TEST_IMAGE
+    - docker tag $SERVER_TEST_IMAGE $SERVER_RELEASE_IMAGE
+    - docker push $SERVER_RELEASE_IMAGE
+  only:
+    - master
+
+deploy:
+  stage: deploy
+  before_script:
+    - apk add --update openssh
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/id_rsa && chmod 600 ~/id_rsa && ssh-add ~/id_rsa
+    - mkdir -p ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+
+  script:
+    - scp /builds/FernandoCagale/seneca-service-base/deploy/Makefile root@"$DEPLOY":~/deploy/base
+    - ssh root@"$DEPLOY" "cd ~/deploy/base; make"
