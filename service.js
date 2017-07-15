@@ -25,7 +25,7 @@ const opts = {
     }
   },
   consul: {
-    host: process.env.ADDR || '127.0.0.1'
+    host: process.env.CONSUL_ADDR || '127.0.0.1'
   }
 };
 
